@@ -17,12 +17,16 @@ defmodule PlateSlateWeb.Router do
   # you can use Plug.BasicAuth to set up some basic authentication
   # as long as you are also using SSL (which you should anyway).
   if Mix.env() in [:dev, :test] do
-    import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through [:fetch_session, :protect_from_forgery]
+      pipe_through :api
 
-      live_dashboard "/dashboard", metrics: PlateSlateWeb.Telemetry
+      forward "/api", Absinthe.Plug,
+        schema: PlateSlateWeb.Schema
+
+      forward "/graphiql", Absinthe.Plug.GraphiQL,
+        schema: PlateSlateWeb.Schema,
+        interface: :simple
     end
   end
 
